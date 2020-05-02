@@ -1,0 +1,146 @@
+#:import utils kivy.utils
+
+<RoundedButton@Button>:
+    background_color: 0,0,0,0  # the last zero makes it invisible
+    canvas.before:
+        Color:
+            rgb: utils.get_color_from_hex('#00171F') if self.state=='normal' else utils.get_color_from_hex('#003459')  # visual effect when a button is pressed
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10,]
+
+<PongBall>:
+    size_hint: 0.035, 0.04
+    canvas:
+        Color:
+            rgb: utils.get_color_from_hex('#0c86b6')
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<PongPaddle>:
+    size_hint: 0.15,0.03
+    canvas:
+        Color:
+            rgb: utils.get_color_from_hex('#26262c')
+        Rectangle:
+            pos:self.pos
+            size:self.size
+
+<MenuWindow>:
+    name: "menu"
+
+    canvas.before:
+        Color:
+            rgb: utils.get_color_from_hex('#00a7e1') # blue
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    FloatLayout:
+        Label:
+            pos_hint: {"x": 0.3, "y": 0.6}
+            size_hint: 0.4, 0.5
+            font_name: 'PermanentMarker-Regular'
+            text: '[ref=BREAK BRICKS][color=eb5e28]BREAK BRICKS[/color][/ref]' # orange
+            font_size: root.width * 0.1
+            markup: True
+            # the contour of label text
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex('#00a7e1')
+                Rectangle:
+                    pos: int(self.center_x - self.texture_size[0] / 2.) + 2, int(self.center_y - self.texture_size[1] / 2.) -2
+                    size: self.texture_size
+                    texture: self.texture
+                Color:
+                    rgba: 1, 1, 1, 1
+
+        BoxLayout:
+            pos_hint: {"x": 0.3, "y": 0.15}
+            size_hint: 0.4, 0.5
+            orientation: "vertical"
+            spacing: 20
+
+            RoundedButton:
+                font_size: self.width * 0.12
+                text: "NEW GAME"
+                on_release:
+                    root.manager.transition.direction = "left"
+                    root.newgameBtn()
+
+            RoundedButton:
+                font_size: self.width * 0.12
+                text: "SCORES"
+                on_release:
+                    root.manager.transition.direction = "left"
+                    root.scoreBtn()
+
+            RoundedButton:
+                font_size: self.width * 0.12
+                text: "KEY MAPPING"
+
+            RoundedButton:
+                font_size: self.width * 0.12
+                text: "ABOUT AUTHOR"
+
+            RoundedButton:
+                font_size: self.width * 0.12
+                text: "QUIT"
+
+<BrickGame>:
+    name: "game"
+
+    # Widgets (Children)
+    layout: layout
+    enter_label: enter_label
+    ball: pong_ball
+    player: player_center
+    ball_life: ball_life
+
+    FloatLayout:
+        id: layout
+        canvas.before:
+            Color:
+                rgb: utils.get_color_from_hex('#000129')  # very dark blue
+            Rectangle:
+                size: root.size
+                pos: self.pos
+
+        Label:
+            id: enter_label
+            text: "Click Enter to start"
+            font_size: root.height/11
+
+        Label:
+            id: ball_life
+            text: f'[ref=BREAK BRICKS][color=eb5e28]{root.lives}[/color][/ref]' # orange
+            font_size: root.height / 14
+            markup: True
+            pos_hint: {"x": 0.4, "y": 0.45}
+
+        PongBall:
+            id: pong_ball
+            center: self.parent.center[0], self.height + self.height/2
+
+        PongPaddle:
+            id: player_center
+            center_x: root.center_x
+            y: root.y
+
+<ScoresWindow>:
+    name: "scores"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgb: utils.get_color_from_hex('#000129')
+            Rectangle:
+                size: root.size
+                pos: self.pos
+        BoxLayout:
+            Label:
+                text: "Tu beda wyniki"
+
+
