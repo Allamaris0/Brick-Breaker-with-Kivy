@@ -27,15 +27,29 @@ class PongPaddle(Widget):
     can_bounce = BooleanProperty(False)
 
     def bounce_ball(self, ball, start):
-        if self.can_bounce and start > 1 and self.x <= ball.center_x < self.x + self.width and ball.y <= self.height:
+        if self.can_bounce:
             vx, vy = ball.velocity
-            offset = (ball.center_y - self.center_y) / (self.height / 2)
-            bounced = Vector(-1 * vx, vy)
-            vel = bounced * 1.01
-            ball.velocity = vel.x, vel.y + offset
-            self.can_bounce = False
 
-        elif not self.collide_widget(ball) and not self.can_bounce:
+            #Top of the paddle
+            if (self.x <= ball.x <= self.x + self.width) and 0 <ball.y <= self.height:
+                vel = Vector(vx, -1 * vy)
+                self.can_bounce = False
+
+                if start==2:
+                    #With serve_ball
+                    offset = (ball.center_y - self.center_y) / self.height
+                    ball.velocity = vel.x, vel.y + offset
+                    start += 1
+                elif start > 2:
+                    ball.velocity = vel.x, vel.y
+
+            #Edges of the paddle
+            if (self.center_y < ball.y<= self.height) and (ball.x <= self.right or ball.right >= self.x):
+                vel = Vector(-1*vx, vy)
+                self.can_bounce = False
+
+
+        elif not self.collide_widget(ball) and not self.can_bounce and start:
             self.can_bounce = True
 
 class PongBall(Widget):
@@ -66,14 +80,11 @@ class MenuWindow(Screen):
 class ScoresWindow(Screen):
     pass
 
-
 class AboutAuthor(Screen):
     pass
 
-
 class KeyMappingWindow(Screen):
     pass
-
 
 # Ekran gry
 class BrickGame(Screen):
@@ -166,8 +177,6 @@ class BrickGame(Screen):
 
         # bounce ball off a paddle
         self.player.bounce_ball(self.ball, self.start)
-        if self.player.x <= self.ball.center_x < self.player.x + self.player.width and self.ball.y <= self.player.height:
-            self.ball.velocity_y *= -1
 
         if len(self.dict_bricks) > 0:
             self.remove_brick(self.ball, self.dict_bricks)
@@ -193,12 +202,17 @@ class BrickGame(Screen):
         dict_bricks = {**dict_bricks}
 
         for pos, rect in dict_bricks.items():
-            if (pos[0] <= ball.x < pos[0] + pos[2] and pos[1] <= ball.y <= pos[1] + pos[3]) or (pos[0] <= ball.right < pos[0] + pos[2] and pos[1] <= ball.top <= pos[1] + pos[3]):
+            if (pos[0] <= ball.x < pos[0] + pos[2] and pos[1] <= ball.y <= pos[1] + pos[3]):
                 self.layout.canvas.remove_group(rect)
                 del self.dict_bricks[pos]
                 vx, vy = ball.velocity
-                bounced = Vector(-1 * vx, vy)
-                vel = bounced * 1.01
+                vel = Vector(vx, -1*vy)
+                ball.velocity = vel.x, vel.y
+            elif (pos[0] <= ball.right < pos[0] + pos[2] and pos[1] <= ball.top <= pos[1] + pos[3]):
+                self.layout.canvas.remove_group(rect)
+                del self.dict_bricks[pos]
+                vx, vy = ball.velocity
+                vel = Vector(-1 * vx, vy)
                 ball.velocity = vel.x, vel.y
 
 
