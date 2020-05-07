@@ -16,12 +16,11 @@ I work with **Kivy 1.11**, but you can check if the code also works with older K
 
 ## To Do:
 
-- to enhance ball bouncing off a paddle
+- ~~to enhance ball bouncing off a paddle~~
 - to add popup with Esc menu (buttons with 'Resume', 'Quit game')
 - to add content to another screens
 - to add next levels
 - to add boosters e.g. doubled width of the paddle, the ball acceleration for limited time
  
 
-"# Kivy" 
 "# Kivy" 
